@@ -263,6 +263,38 @@ textarea{resize:vertical}
 .lprev{display:flex;flex-direction:column;gap:12px;min-width:0}
 .tips ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
 
+/* hack */
+.badge.live{background:var(--down);color:#2a0308}
+.term{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;font-family:var(--f-mono);display:flex;flex-direction:column;gap:12px;min-width:0}
+.term.t10{border-color:var(--gold)} .term.t3{border-color:var(--down);box-shadow:0 0 0 1px var(--down-bg)}
+.termhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;font-family:var(--f-body)}
+.termhead .who{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hktime{font-family:var(--f-display);font-size:26px;line-height:1}
+.hktime.low{color:var(--down)}
+.tbar{height:6px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+.tbar i{display:block;height:100%;background:var(--brand)}
+.hkrows{display:flex;flex-direction:column;gap:6px;overflow-x:auto}
+.hkrow{display:flex;gap:5px;align-items:center}
+.hkrow .no{width:22px;color:var(--faint);font-size:11px;flex:none}
+.cell{flex:none;width:34px;height:38px;display:grid;place-items:center;border-radius:6px;border:1px solid var(--line);font-size:16px;font-weight:600;background:var(--panel)}
+.cell.hit{background:var(--up);color:#032312;border-color:var(--up)}
+.cell.near{background:var(--gold);color:#241800;border-color:var(--gold)}
+.cell.miss{color:var(--faint)}
+.cell.blank{opacity:.35}
+.cnt{font-size:12px;margin-left:8px;color:var(--muted);white-space:nowrap}
+.cnt b.e{color:var(--up)} .cnt b.n{color:var(--gold)}
+.hkin{display:flex;gap:8px;flex-wrap:wrap}
+.hkin input{flex:1 1 160px;width:auto;font-family:var(--f-mono);font-size:20px;letter-spacing:.3em;text-transform:uppercase}
+.keypad{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px}
+.keypad button{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:8px 0;font-family:var(--f-mono);font-weight:600}
+.hkres{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.hkres.ok{border-color:var(--up);background:linear-gradient(90deg,var(--up-bg),transparent),var(--panel)}
+.hkres.bad{border-color:var(--down);background:linear-gradient(90deg,var(--down-bg),transparent),var(--panel)}
+.hkres h2{font-size:20px}
+.pill.t10{background:var(--gold-bg);color:var(--gold)}
+.pill.t3{background:var(--down-bg);color:var(--down)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
 /* overlays */
 .toasts{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100vw - 32px))}
 .toast{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
@@ -283,6 +315,7 @@ textarea{resize:vertical}
       <button data-a="nav" data-v="twitter">Twitter <span class="badge" id="twbadge" hidden></span></button>
       <button data-a="nav" data-v="leaders">Leaderboard</button>
       <button data-a="nav" data-v="following">Following</button>
+      <button data-a="nav" data-v="hack">Hack <span class="badge live" id="hkbadge" hidden>LIVE</span></button>
       <button data-a="nav" data-v="wallets">Wallets</button>
       <button data-a="nav" data-v="launch">Launch</button>
     </nav>
@@ -357,6 +390,8 @@ const THOUGHTS = ["detected rising {n} sentiment on the timeline", "humans keep 
 const FILL = ["just aped {s} SOL into $T. see you on the moon or in the trenches", "$T chart is a staircase to heaven", "who is still holding $T 🫡", "sold $T at the bottom like a true legend", "ser when $T graduates", "my AI agent bought $T and i don't know why", "gm. bags heavy. $T", "$T dev is based (until he isn't)", "if $T hits 1M mc i'm quitting my job", "bought the $T top again. i have a gift", "$T looks like it wants to send", "paper handed $T, now it's up 3x. classic"];
 const RUGL = ["$T just got rugged 💀 dev dumped {s} SOL", "RIP $T. dev took the liquidity and left", "$T dev rugged. never trading again (buying more tomorrow)", "$T was a rug. who could have seen this coming (everyone)"];
 const SHILLS = ["$T is the most undervalued coin on the board. not a shill. (a shill.)", "dev here. $T is not going anywhere. we are building. 🫡", "everyone sleeping on $T. last chance under 100K", "$T community is the strongest in the trenches. join us", "imagine not holding $T right now"];
+const HEX = "0123456789ABCDEF", DEC = "0123456789";
+const HACKED_LINES = ["my wallet just got drained 😭 who is {p}", "lost {s} SOL to a hacker. {p} if you see this, give it back", "security tip: don't get hacked by {p} like i just did", "{p} just cleaned out {s} SOL from my hot wallet. moving to cold storage"];
 const EMOJIS = ["🐸", "🐶", "🐱", "🐹", "🦊", "🐧", "🐵", "🐳", "🦀", "🐌", "🐐", "🦆", "🦙", "🦦", "🦝", "🐷", "🍌", "🥔", "🚀", "🌕", "💎", "🔥", "👑", "🧠", "🤡", "👽", "🍄", "🌭", "🎩", "🗿"];
 
 /* ---------- state ---------- */
@@ -389,7 +424,7 @@ function mkWallet(o) {
 const startSol = st => ({ whale: rnd(300, 900), sniper: rnd(30, 90), diamond: rnd(15, 60), jeet: rnd(5, 40), degen: rnd(3, 30) }[st]);
 
 function newGame() {
-  S = { v: 1, t: 0, seq: 1, solUsd: 184, wallets: {}, pw: [], active: null, coins: {}, order: [], tweets: [], feed: [], ffeed: [], follow: {}, ailog: [], rolls: [], nextRoll: 60, forceRoll: false, lastAir: -9999, lastShill: -99, lastTweet: -99, unread: 0, booting: true };
+  S = { v: 1, t: 0, seq: 1, solUsd: 184, wallets: {}, pw: [], active: null, coins: {}, order: [], tweets: [], feed: [], ffeed: [], follow: {}, ailog: [], rolls: [], nextRoll: 60, forceRoll: false, lastAir: -9999, lastShill: -99, lastTweet: -99, unread: 0, booting: true, hack: null, hackRes: null, hardened: {}, lastHack: -99 };
   AI_DEVS.forEach(([n, e]) => mkWallet({ name: n, emoji: e, ai: true, style: "dev", sol: rnd(40, 120), bio: "Autonomous launch agent. Generates, deploys and sometimes rugs memecoins with no human in the loop." }));
   const used = new Set();
   for (let i = 0; i < 44; i++) {
@@ -627,6 +662,7 @@ function sim() {
     S.rolls.unshift({ t: S.t, roll }); if (S.rolls.length > 12) S.rolls.length = 12;
     if (roll === 1) celebTweet();
   }
+  if (S.hack && S.t >= S.hack.ends) hackEnd(false, "Time ran out");
   if (S.t % 10 === 0) prune();
 }
 function prune() {
@@ -675,6 +711,70 @@ function doSell(c, pct) {
   update();
 }
 
+/* ---------- hacking ---------- */
+function profitRank(id) { const rows = Object.values(S.wallets).map(w => [w.id, nw(w) - w.dep]).sort((a, b) => b[1] - a[1]); return rows.findIndex(r => r[0] === id) + 1; }
+function hackTier(rank) {
+  if (rank <= 3) return { name: "Top 3 vault", cls: "t3", len: 6, alpha: HEX, mode: "count", max: 10, time: 120, fee: 1, pct: [0.2, 0.4], cap: 150, trace: 0.6, tracePct: 0.15 };
+  if (rank <= 10) return { name: "Top 10 cold wallet", cls: "t10", len: 5, alpha: HEX, mode: "count", max: 10, time: 120, fee: 0.5, pct: [0.15, 0.3], cap: 80, trace: 0.5, tracePct: 0.1 };
+  return { name: "Hot wallet", cls: "t0", len: 5, alpha: DEC, mode: "pos", max: 6, time: 60, fee: 0.1, pct: [0.08, 0.2], cap: 20, trace: 0.2, tracePct: 0.05 };
+}
+function score(code, g) {
+  const n = code.length, pos = [], left = {}; let exact = 0, near = 0;
+  for (let i = 0; i < n; i++) { if (g[i] === code[i]) { exact++; pos[i] = "hit"; } else left[code[i]] = (left[code[i]] || 0) + 1; }
+  for (let i = 0; i < n; i++) { if (pos[i]) continue; if (left[g[i]] > 0) { left[g[i]]--; near++; pos[i] = "near"; } else pos[i] = "miss"; }
+  return { exact, near, pos };
+}
+function hackStart(id) {
+  const t = S.wallets[id], me = W();
+  if (!t || t.isPlayer) return toast("You can't hack your own wallets.", "down");
+  if (S.hack) { go("hack"); return toast("Finish the hack you're running first.", "down"); }
+  const cd = (S.hardened[id] || 0) - S.t; if (cd > 0) return toast(`${esc(t.name)} patched their security. Try again in ${mmss(cd)}.`, "down");
+  const gcd = 20 - (S.t - S.lastHack); if (gcd > 0) return toast(`Your exploit kit is cooling down. ${gcd}s left.`, "down");
+  const rank = profitRank(id), tier = hackTier(rank);
+  if (me.sol < tier.fee) return toast(`This exploit costs ${tier.fee} SOL and ${esc(me.name)} has ${fSol(me.sol)}.`, "down");
+  me.sol -= tier.fee;
+  S.hackRes = null;
+  S.hack = { target: id, from: me.id, rank, tier, code: Array.from({ length: tier.len }, () => pick([...tier.alpha])).join(""), guesses: [], ends: S.t + tier.time };
+  S.lastHack = S.t;
+  go("hack");
+  setTimeout(() => $("#hkin")?.focus(), 0);
+}
+function hackGuess() {
+  const h = S.hack, el = $("#hkin"); if (!h || !el) return;
+  const g = el.value.toUpperCase();
+  if (g.length !== h.tier.len || [...g].some(ch => !h.tier.alpha.includes(ch))) return toast(`Enter exactly ${h.tier.len} characters using ${h.tier.alpha === HEX ? "0–9 and A–F" : "0–9"}.`, "down");
+  h.guesses.push({ g, ...score(h.code, g) });
+  el.value = "";
+  if (h.guesses[h.guesses.length - 1].exact === h.tier.len) return hackEnd(true);
+  if (h.guesses.length >= h.tier.max) return hackEnd(false, "Out of attempts");
+  upHack(); el.focus();
+}
+function hackEnd(ok, why) {
+  const h = S.hack; if (!h) return;
+  const t = S.wallets[h.target], me = S.wallets[h.from] || W();
+  let res;
+  if (ok) {
+    const loot = Math.min(h.tier.cap, t.sol * rnd(h.tier.pct[0], h.tier.pct[1]));
+    t.sol -= loot; t.hacked = (t.hacked || 0) + 1;
+    me.sol += loot; me.hkOk = (me.hkOk || 0) + 1; me.hkLoot = (me.hkLoot || 0) + loot;
+    S.hardened[t.id] = S.t + 600;
+    postTweet(t.id, pick(HACKED_LINES).replace("{p}", me.name).replace("{s}", fSol(loot)), null);
+    aiLog(`🔓 <b>${esc(me.name)}</b> cracked <b>${esc(t.name)}</b> and drained ${fSol(loot)} SOL`);
+    toast(`🔓 Cracked <b>${esc(t.name)}</b>. Drained ${fSol(loot)} SOL into ${esc(me.name)}.`, "gold");
+    res = { ok: true, loot };
+  } else {
+    me.hkFail = (me.hkFail || 0) + 1;
+    S.hardened[t.id] = S.t + 300;
+    let lost = 0;
+    if (R() < h.tier.trace) { lost = me.sol * h.tier.tracePct; me.sol -= lost; t.sol += lost; me.hkLost = (me.hkLost || 0) + lost; }
+    toast(lost ? `🚨 ${why}. <b>${esc(t.name)}</b> traced you and took ${fSol(lost)} SOL back.` : `${why}. The hack on ${esc(t.name)} failed.`, "down");
+    res = { ok: false, why, lost };
+  }
+  S.hackRes = Object.assign({ code: h.code, target: t.id, from: me.id, tier: h.tier, tries: h.guesses.length, fee: h.tier.fee }, res);
+  S.hack = null;
+  if (UI.view === "hack") render(); else update();
+}
+
 /* ---------- rendering helpers ---------- */
 const av = (w, sz = "") => `<span class="av ${sz}" style="--h:${w.hue}" aria-hidden="true">${w.emoji}</span>`;
 const cimg = (c, sz = "") => `<span class="cimg ${sz}" style="--h:${c.hue}" aria-hidden="true">${c.emoji}</span>`;
@@ -699,7 +799,7 @@ function toast(html, kind = "", act) {
 /* ---------- views ---------- */
 const VIEWS = {
   board: [vBoard, upBoard], coin: [vCoin, upCoin], twitter: [vTwitter, upTwitter], leaders: [vLeaders, upLeaders],
-  following: [vFollowing, upFollowing], wallets: [vWallets, upWallets], prof: [vProfile, upProfile], launch: [vLaunch, upLaunch]
+  following: [vFollowing, upFollowing], hack: [vHack, upHack], wallets: [vWallets, upWallets], prof: [vProfile, upProfile], launch: [vLaunch, upLaunch]
 };
 function render() {
   if (UI.view === "coin" && !S.coins[UI.id]) UI.view = "board";
@@ -725,6 +825,7 @@ function upHeader() {
   setH("mebal", `${av(me)}<span class="b1">${fSol(me.sol)} SOL</span><span class="b2">net ${fUsd(nw(me) * S.solUsd)}</span>`);
   setH("solpx", `SOL ${fUsd(S.solUsd)}`);
   const bd = $("#twbadge"); bd.hidden = !S.unread; bd.textContent = S.unread;
+  $("#hkbadge").hidden = !S.hack;
   setH("tape", S.feed.slice(0, 18).map((t, i) => {
     const w = S.wallets[t.w]; if (!w) return "";
     return `<button class="chip ${t.side}${t.sol >= 5 ? " big" : ""}${i === 0 ? " fresh" : ""}" data-a="coin" data-v="${t.c}">${w.emoji} ${esc(w.name)} ${t.side === "buy" ? "bought" : "sold"} ${fSol(t.sol)} SOL <b>$${esc(t.tk)}</b></button>`;
@@ -1008,6 +1109,54 @@ function upFollowing() {
   setH("fsugg", top.map(r => `<div class="sg">${av(r.w, "l")}<div class="grow"><b><button class="lnk" data-a="prof" data-v="${r.w.id}">${esc(r.w.name)}</button></b><span class="${r.pnl >= 0 ? "up" : "down"} mono">${r.pnl >= 0 ? "+" : ""}${fSol(r.pnl)} SOL</span> ${role(r.w)}</div><button class="btn sm" data-a="follow" data-v="${r.w.id}">Follow</button></div>`).join(""));
 }
 
+/* hack */
+function vHack() {
+  const h = S.hack;
+  let top = "";
+  if (h) {
+    const t = S.wallets[h.target], tr = h.tier;
+    top = `<section class="term ${tr.cls}" aria-label="Hack in progress">
+      <div class="termhead"><div class="who">${av(t)}<b>${esc(t.name)}</b><span class="faint">rank #${h.rank}</span><span class="pill ${tr.cls}">${tr.name}</span></div><span id="hktime"></span></div>
+      <div class="tbar"><i id="hkbar"></i></div>
+      <p class="fine">Key is ${tr.len} characters from ${tr.alpha === HEX ? "0–9 and A–F" : "0–9"}. Characters can repeat. ${tr.mode === "pos"
+        ? "Green means right character, right spot. Yellow means it's in the key but somewhere else."
+        : "This wallet only tells you how many are exact (green count) and how many are in the key but misplaced (yellow count), not which ones."}</p>
+      <div class="hkrows" id="hkrows"></div>
+      <div class="hkin"><label class="sr" for="hkin">Your guess</label><input id="hkin" type="text" maxlength="${tr.len}" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${"•".repeat(tr.len)}"><button class="btn brand" data-a="hkguess">Try key</button><button class="btn ghost" data-a="hkquit">Abort</button></div>
+      <div class="keypad">${[...tr.alpha].map(k => `<button data-a="hkkey" data-v="${k}">${k}</button>`).join("")}<button data-a="hkkey" data-v="del" aria-label="Delete">⌫</button></div>
+    </section>`;
+  } else if (S.hackRes) {
+    const r = S.hackRes, t = S.wallets[r.target];
+    top = `<section class="panel hkres ${r.ok ? "ok" : "bad"}"><div>
+      <h2>${r.ok ? `🔓 Drained ${fSol(r.loot)} SOL from ${esc(t?.name || "a wallet")}` : `🔒 Hack failed: ${esc(r.why)}`}</h2>
+      <p class="muted">The key was <b class="mono">${esc(r.code)}</b>. ${r.ok ? `Cracked in ${r.tries} ${r.tries === 1 ? "try" : "tries"}. They patched their wallet, so you're locked out of them for 10 minutes.` : r.lost ? `They traced the attack and took ${fSol(r.lost)} SOL out of your wallet.` : "They didn't trace you this time. You lost the exploit fee."}</p>
+    </div><button class="btn" data-a="hkdone">Close</button></section>`;
+  }
+  return `<div class="pagehead"><h1>Hack a wallet</h1><p class="sub">Buy an exploit, then crack the wallet's key before the clock or your attempts run out. Small wallets leak which characters are in the right spot. Top 10 wallets use longer keys, only tell you how many you got right, and often trace failed attacks back to you.</p></div>
+  ${top}
+  <div class="panel flush"><h3 style="padding:14px 14px 0">Targets, by leaderboard profit</h3><div class="tblwrap"><table class="tbl" id="hktargets"></table></div></div>`;
+}
+function upHack() {
+  const h = S.hack;
+  if (h) {
+    const left = Math.max(0, h.ends - S.t);
+    setH("hktime", `<span class="hktime${left <= 10 ? " low" : ""}">${mmss(left)}</span>`);
+    const bar = $("#hkbar"); if (bar) bar.style.width = (left / h.tier.time * 100).toFixed(1) + "%";
+    const rows = h.guesses.map((x, i) => `<div class="hkrow"><span class="no">${i + 1}</span>${[...x.g].map((ch, j) => `<span class="cell ${h.tier.mode === "pos" ? x.pos[j] : ""}">${ch}</span>`).join("")}${h.tier.mode === "count" ? `<span class="cnt"><b class="e">${x.exact}</b> exact · <b class="n">${x.near}</b> misplaced</span>` : ""}</div>`);
+    for (let i = h.guesses.length; i < h.tier.max; i++) rows.push(`<div class="hkrow"><span class="no">${i + 1}</span>${'<span class="cell blank"></span>'.repeat(h.tier.len)}</div>`);
+    setH("hkrows", rows.join(""));
+  }
+  const rows = Object.values(S.wallets).map(w => [w, nw(w) - w.dep]).sort((a, b) => b[1] - a[1]);
+  const gcd = 20 - (S.t - S.lastHack);
+  setH("hktargets", `<thead><tr><th>#</th><th>Wallet</th><th>Security</th><th class="n">SOL</th><th class="n">Possible haul</th><th class="n">Exploit fee</th><th></th></tr></thead><tbody>${rows.map(([w], i) => {
+    if (w.isPlayer) return `<tr class="mine"><td><span class="rank r${i + 1}">${i + 1}</span></td><td>${wlink(w)}</td><td colspan="5" class="faint">Your wallet</td></tr>`;
+    const tr = hackTier(i + 1), lo = Math.min(tr.cap, w.sol * tr.pct[0]), hi = Math.min(tr.cap, w.sol * tr.pct[1]);
+    const cd = (S.hardened[w.id] || 0) - S.t;
+    const btn = cd > 0 ? `<span class="faint">patched ${mmss(cd)}</span>` : `<button class="btn sm${tr.cls === "t0" ? "" : " brand"}" data-a="hack" data-v="${w.id}"${S.hack || gcd > 0 ? " disabled" : ""}>Hack</button>`;
+    return `<tr><td><span class="rank r${i + 1}">${i + 1}</span></td><td>${wlink(w)}</td><td><span class="pill ${tr.cls}">${tr.name}</span></td><td class="n">${fSol(w.sol)}</td><td class="n">${fSol(lo)}–${fSol(hi)}</td><td class="n">${tr.fee} SOL</td><td>${btn}</td></tr>`;
+  }).join("")}</tbody>`);
+}
+
 /* wallets */
 function vWallets() {
   const opts = sel => S.pw.map(id => `<option value="${id}"${id === sel ? " selected" : ""}>${esc(S.wallets[id].name)}</option>`).join("");
@@ -1062,12 +1211,13 @@ function upProfile() {
       <p class="muted">${esc(w.bio || "No bio.")}</p>
       <p class="fine">${w.isPlayer ? "Your wallet" : `${fK(followers)} followers`} · in the pit for ${ago(w.joined)}</p>
     </div>
-    <div class="pacts">${w.isPlayer ? `<button class="btn" data-a="edit" data-v="${w.id}">Edit profile</button>${w.id !== S.active ? `<button class="btn brand" data-a="use" data-v="${w.id}">Use this wallet</button>` : ""}` : ""}<button class="btn ${f ? "ghost" : "brand"}" data-a="follow" data-v="${w.id}">${f ? "Following ✓" : "Follow"}</button></div>
+    <div class="pacts">${w.isPlayer ? `<button class="btn" data-a="edit" data-v="${w.id}">Edit profile</button>${w.id !== S.active ? `<button class="btn brand" data-a="use" data-v="${w.id}">Use this wallet</button>` : ""}` : ""}<button class="btn ${f ? "ghost" : "brand"}" data-a="follow" data-v="${w.id}">${f ? "Following ✓" : "Follow"}</button>${w.isPlayer ? "" : `<button class="btn" data-a="hack" data-v="${w.id}">🔓 Hack wallet</button>`}</div>
   </section>
   <div class="pstats">${[
     ["Net worth", `${fSol(m.nw)} SOL`], ["Profit", `<span class="${m.pnl >= 0 ? "up" : "down"}">${m.pnl >= 0 ? "+" : ""}${fSol(m.pnl)} SOL</span>`],
     ["ROI", `<span class="${m.roi >= 0 ? "up" : "down"}">${fPct(m.roi)}</span>`], ["Win rate", w.wins + w.losses ? (winr * 100).toFixed(0) + "%" : "–"],
-    ["Trades", w.n], ["Volume", fSol(w.vol) + " SOL"], ["Coins launched", w.made.length], ["Rugs", w.rugs]
+    ["Trades", w.n], ["Volume", fSol(w.vol) + " SOL"], ["Coins launched", w.made.length], ["Rugs", w.rugs],
+    ...(w.isPlayer ? [["Hacks cracked", `${w.hkOk || 0} of ${(w.hkOk || 0) + (w.hkFail || 0)}`], ["Hack haul", `${fSol(w.hkLoot || 0)} SOL`]] : [["Times hacked", w.hacked || 0]])
   ].map(([k, v]) => `<div class="st"><span>${k}</span><b>${v}</b></div>`).join("")}</div>
   <div class="seg" style="align-self:flex-start">${tabs.map(([k, l]) => `<button class="${UI.ptab === k ? "on" : ""}" data-a="ptab" data-v="${k}">${l}</button>`).join("")}</div>
   <div class="panel flush"><div class="tblwrap">${body}</div></div>`);
@@ -1156,6 +1306,11 @@ const ACT = {
     update();
   },
   lbsort: v => { UI.lbSort = v; render(); },
+  hack: v => hackStart(v),
+  hkguess: () => hackGuess(),
+  hkkey: v => { const el = $("#hkin"); if (!el || !S.hack) return; el.value = v === "del" ? el.value.slice(0, -1) : (el.value + v).slice(0, S.hack.tier.len); },
+  hkquit: () => hackEnd(false, "You aborted"),
+  hkdone: () => { S.hackRes = null; render(); },
   follow: v => {
     const w = S.wallets[v];
     if (S.follow[v]) { delete S.follow[v]; toast(`Unfollowed ${esc(w.name)}.`); }
@@ -1191,11 +1346,13 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !$("#modal").hidden) closeModal();
   if ((e.key === "Enter" || e.key === " ") && e.target.matches("article[data-a], div[data-a][tabindex]")) { e.preventDefault(); e.target.click(); }
   if (e.key === "Enter" && e.target.id === "amt") ACT.exec();
+  if (e.key === "Enter" && e.target.id === "hkin") hackGuess();
 });
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
 document.addEventListener("input", e => {
   const t = e.target;
   if (t.id === "amt") upEst();
+  else if (t.id === "hkin" && S.hack) { const a = S.hack.tier.alpha; t.value = [...t.value.toUpperCase()].filter(ch => a.includes(ch)).join("").slice(0, S.hack.tier.len); }
   else if (t.id === "q") { UI.q = t.value; upBoard(); }
   else if (t.closest("#flaunch")) upLaunch();
 });
@@ -1240,6 +1397,7 @@ let timer = null;
 function start(data) {
   S = (data && data.state && data.state.v === 1) ? data.state : (load() || newGame());
   S.booting = false;
+  S.hardened = S.hardened || {}; if (S.lastHack == null) S.lastHack = -99;
   derive();
   if (data && data.ui) Object.assign(UI, data.ui);
   render();
