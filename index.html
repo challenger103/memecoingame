@@ -714,8 +714,8 @@ function doSell(c, pct) {
 /* ---------- hacking ---------- */
 function profitRank(id) { const rows = Object.values(S.wallets).map(w => [w.id, nw(w) - w.dep]).sort((a, b) => b[1] - a[1]); return rows.findIndex(r => r[0] === id) + 1; }
 function hackTier(rank) {
-  if (rank <= 3) return { name: "Top 3 vault", cls: "t3", len: 6, alpha: HEX, mode: "count", max: 10, time: 120, fee: 1, pct: [0.2, 0.4], cap: 150, trace: 0.6, tracePct: 0.15 };
-  if (rank <= 10) return { name: "Top 10 cold wallet", cls: "t10", len: 5, alpha: HEX, mode: "count", max: 10, time: 120, fee: 0.5, pct: [0.15, 0.3], cap: 80, trace: 0.5, tracePct: 0.1 };
+  if (rank <= 3) return { name: "Top 3 vault", cls: "t3", len: 6, alpha: HEX, mode: "pos", max: 7, time: 80, fee: 1, pct: [0.2, 0.4], cap: 150, trace: 0.6, tracePct: 0.15 };
+  if (rank <= 10) return { name: "Top 10 cold wallet", cls: "t10", len: 5, alpha: HEX, mode: "pos", max: 7, time: 75, fee: 0.5, pct: [0.15, 0.3], cap: 80, trace: 0.5, tracePct: 0.1 };
   return { name: "Hot wallet", cls: "t0", len: 5, alpha: DEC, mode: "pos", max: 6, time: 60, fee: 0.1, pct: [0.08, 0.2], cap: 20, trace: 0.2, tracePct: 0.05 };
 }
 function score(code, g) {
@@ -1132,7 +1132,7 @@ function vHack() {
       <p class="muted">The key was <b class="mono">${esc(r.code)}</b>. ${r.ok ? `Cracked in ${r.tries} ${r.tries === 1 ? "try" : "tries"}. They patched their wallet, so you're locked out of them for 10 minutes.` : r.lost ? `They traced the attack and took ${fSol(r.lost)} SOL out of your wallet.` : "They didn't trace you this time. You lost the exploit fee."}</p>
     </div><button class="btn" data-a="hkdone">Close</button></section>`;
   }
-  return `<div class="pagehead"><h1>Hack a wallet</h1><p class="sub">Buy an exploit, then crack the wallet's key before the clock or your attempts run out. Small wallets leak which characters are in the right spot. Top 10 wallets use longer keys, only tell you how many you got right, and often trace failed attacks back to you.</p></div>
+  return `<div class="pagehead"><h1>Hack a wallet</h1><p class="sub">Buy an exploit, then crack the wallet's key before the clock or your attempts run out. Green means right character in the right spot, yellow means it's in the key somewhere else. Top 10 wallets add the letters A–F to their keys, and top 3 wallets use longer keys. Both give you less time and often trace failed attacks back to you.</p></div>
   ${top}
   <div class="panel flush"><h3 style="padding:14px 14px 0">Targets, by leaderboard profit</h3><div class="tblwrap"><table class="tbl" id="hktargets"></table></div></div>`;
 }
