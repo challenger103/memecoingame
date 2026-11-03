@@ -630,18 +630,22 @@ function celebTweet() {
   let r = R() * cands.reduce((s, c) => s + 0.25 + c.hype, 0), c = cands[0];
   for (const x of cands) { r -= 0.25 + x.hype; if (r <= 0) { c = x; break; } }
   const ci = ri(0, CELEBS.length - 1), who = CELEBS[ci];
-  const mc0 = mcSol(c);
-  postTweet(null, pick(who.lines).replaceAll("$T", "$" + c.ticker), c.id, { celeb: ci, likes: ri(2000, 9000), rts: ri(300, 1500), big: true, mc0 });
-  c.hype += rnd(6, 12); c.boost = ri(25, 45); c.celeb = { ci, t: S.t };
-  const n = ri(8, 16);
-  for (let i = 0; i < n; i++) { const w = pick(BOTS); trade(w, c, "buy", Math.min(w.sol * 0.5, rnd(1, w.style === "whale" ? 25 : 6))); }
-  if (c.rugger) { c.rugAt = S.t + ri(20, 70); c.rugMc = 1e12; }
-  aiLog(`🚨 <b>${esc(who.name)}</b> tweeted ${tkLink(c)}`);
+  celebPump(ci, c, pick(who.lines).replaceAll("$T", "$" + c.ticker));
   if (!S.booting) {
     S.unread++;
     const mine = isMine(c.dev);
     toast(`🚨 <b>${esc(who.name)}</b> just tweeted ${mine ? "<b>your coin</b> " : ""}<b>$${esc(c.ticker)}</b>`, "gold", { a: "coin", v: c.id, label: "Trade it" });
   }
+}
+// The market reaction to a big-name tweet. Used by the random roll and by players posting from a famous wallet.
+function celebPump(ci, c, text) {
+  const who = CELEBS[ci], mc0 = mcSol(c);
+  postTweet(null, text, c.id, { celeb: ci, likes: ri(2000, 9000), rts: ri(300, 1500), big: true, mc0 });
+  c.hype += rnd(6, 12); c.boost = ri(25, 45); c.celeb = { ci, t: S.t }; c.dead = false;
+  const n = ri(8, 16);
+  for (let i = 0; i < n; i++) { const w = pick(BOTS); trade(w, c, "buy", Math.min(w.sol * 0.5, rnd(1, w.style === "whale" ? 25 : 6))); }
+  if (c.rugger) { c.rugAt = S.t + ri(20, 70); c.rugMc = 1e12; }
+  aiLog(`🚨 <b>${esc(who.name)}</b> tweeted ${tkLink(c)}`);
 }
 function shillEffect(c) {
   if (S.t - S.lastShill < 15) { toast(`Posted, but the timeline is tired of you. Wait ${15 - (S.t - S.lastShill)}s for a shill to count.`, "down"); return; }
@@ -1059,9 +1063,9 @@ function vTwitter() {
   <div class="twgrid">
     <section class="twmain">
       <div class="panel compose">
-        <label for="twtext" class="lbl">Post as ${esc(me.name)}</label>
-        <textarea id="twtext" rows="3" maxlength="220" placeholder="Shill your coin. Mention its $TICKER to pull in a few buyers."></textarea>
-        <div class="crow"><span class="fine">Mentioning a coin you launched gives it a small bump.</span><button class="btn brand" data-a="tweet">Post</button></div>
+        <label for="twtext" class="lbl">Post as ${esc(me.name)}${me.celeb != null ? ' <span class="ver gold" aria-label="verified">✓</span>' : ""}</label>
+        <textarea id="twtext" rows="3" maxlength="220" placeholder="${me.celeb != null ? "You're a famous account. Mention any coin's $TICKER and it rips." : "Shill your coin. Mention its $TICKER to pull in a few buyers."}"></textarea>
+        <div class="crow"><span class="fine">${me.celeb != null ? "Your tweets move markets like a big-name tweet." : "Mentioning a coin you launched gives it a small bump."}</span><button class="btn brand" data-a="tweet">Post</button></div>
       </div>
       <div class="panel flush" id="twfeed"></div>
     </section>
@@ -1341,8 +1345,13 @@ const ACT = {
     S.lastTweet = S.t;
     const me = W(), tks = [...txt.matchAll(/\$([A-Za-z0-9]{2,14})/g)].map(m => m[1].toUpperCase());
     const c = S.order.map(id => S.coins[id]).find(c => tks.includes(c.ticker));
-    postTweet(me.id, txt, c?.id, { likes: ri(0, 6), rts: ri(0, 1) });
     ta.value = "";
+    if (me.celeb != null) {
+      if (c) { celebPump(me.celeb, c, txt); toast(`🚨 You tweeted <b>$${esc(c.ticker)}</b> as ${esc(me.name)}. Watch it rip.`, "gold", { a: "coin", v: c.id, label: "View" }); }
+      else { postTweet(null, txt, null, { celeb: me.celeb, likes: ri(800, 4000), rts: ri(100, 600) }); toast(`Posted as ${esc(me.name)}. Mention a coin's $TICKER to move its price.`, "up"); }
+      return update();
+    }
+    postTweet(me.id, txt, c?.id, { likes: ri(0, 6), rts: ri(0, 1) });
     if (c && isMine(c.dev) && !c.rugged) shillEffect(c);
     else { if (c) c.hype += 0.02; toast("Posted.", "up"); }
     update();
