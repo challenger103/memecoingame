@@ -295,6 +295,8 @@ textarea{resize:vertical}
 .pill.t3{background:var(--down-bg);color:var(--down)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 
+.secrow{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:10px;border-top:1px dashed var(--line);font-size:13px}
+
 /* overlays */
 .toasts{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100vw - 32px))}
 .toast{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
@@ -362,14 +364,14 @@ const V_SOL = 30, V_TOK = 1073000000, SUPPLY = 1e9, GRAD = 85, FEE = 0.01;
 
 // Parody accounts. Swap names here if you want different "big names".
 const CELEBS = [
-  { name: "Melon Tusk", h: "melontusk", e: "🚀", hue: 210, lines: ["$T", "$T 🚀🚀🚀", "wow $T", "$T is the people's coin", "might put $T on a rocket. just saying.", "the most entertaining outcome is $T at $1"] },
-  { name: "Ronald Rump", h: "realRonaldRump", e: "🍊", hue: 28, lines: ["$T is a TREMENDOUS coin. Many people are saying it's the best coin ever. BUY $T!", "I love $T. Nobody has seen a coin like $T. HUGE!", "$T is going to be BIGGER than anyone thought. Believe me!"] },
-  { name: "MrBeastly", h: "mrbeastly", e: "💸", hue: 195, lines: ["I'll give $1,000,000 to one random holder of $T (I won't)", "should I buy $T for my next video? 👀", "just bought $T. retweet if you're holding"] },
-  { name: "Snoop Doggo", h: "snoopdoggo", e: "🌿", hue: 120, lines: ["$T is smooth like that fo shizzle 🐶", "got some $T in the stash, ya dig"] },
-  { name: "Mark Cubano", h: "mcubano", e: "🏀", hue: 265, lines: ["Not financial advice, but $T has better fundamentals than half my portfolio.", "Reminder: $T. Do your own research."] },
-  { name: "Vitalik Buterfly", h: "vitalikbuterfly", e: "🦋", hue: 300, lines: ["interesting mechanism design in $T. no comment on price.", "someone airdropped me half of $T supply again"] },
-  { name: "Changpeng Zoo", h: "cz_zoo", e: "🐼", hue: 45, lines: ["4. $T", "Ignore FUD. Build. $T"] },
-  { name: "Cathie Woodpecker", h: "cathiewoodpecker", e: "🪶", hue: 340, lines: ["Our 5-year price target for $T is up 5,000%.", "We added $T to the innovation fund today."] }
+  { name: "Melon Tusk", h: "melontusk", e: "🚀", hue: 210, sol: 50000, lines: ["$T", "$T 🚀🚀🚀", "wow $T", "$T is the people's coin", "might put $T on a rocket. just saying.", "the most entertaining outcome is $T at $1"] },
+  { name: "Ronald Rump", h: "realRonaldRump", e: "🍊", hue: 28, sol: 25000, lines: ["$T is a TREMENDOUS coin. Many people are saying it's the best coin ever. BUY $T!", "I love $T. Nobody has seen a coin like $T. HUGE!", "$T is going to be BIGGER than anyone thought. Believe me!"] },
+  { name: "MrBeastly", h: "mrbeastly", e: "💸", hue: 195, sol: 8000, lines: ["I'll give $1,000,000 to one random holder of $T (I won't)", "should I buy $T for my next video? 👀", "just bought $T. retweet if you're holding"] },
+  { name: "Snoop Doggo", h: "snoopdoggo", e: "🌿", hue: 120, sol: 3000, lines: ["$T is smooth like that fo shizzle 🐶", "got some $T in the stash, ya dig"] },
+  { name: "Mark Cubano", h: "mcubano", e: "🏀", hue: 265, sol: 12000, lines: ["Not financial advice, but $T has better fundamentals than half my portfolio.", "Reminder: $T. Do your own research."] },
+  { name: "Vitalik Buterfly", h: "vitalikbuterfly", e: "🦋", hue: 300, sol: 40000, lines: ["interesting mechanism design in $T. no comment on price.", "someone airdropped me half of $T supply again"] },
+  { name: "Changpeng Zoo", h: "cz_zoo", e: "🐼", hue: 45, sol: 60000, lines: ["4. $T", "Ignore FUD. Build. $T"] },
+  { name: "Cathie Woodpecker", h: "cathiewoodpecker", e: "🪶", hue: 340, sol: 6000, lines: ["Our 5-year price target for $T is up 5,000%.", "We added $T to the innovation fund today."] }
 ];
 const AI_DEVS = [["NeuralDegen v3", "🤖"], ["GPT-Pumper", "🧠"], ["autoLaunch_v2", "⚙️"], ["LLaMeme", "🦙"], ["SynthShiller", "📡"], ["AgentRugsworth", "🎩"], ["DeepFry-9", "🍟"], ["TokenForge.ai", "🔨"], ["MemeGen-X", "🧪"], ["Pumpinator", "🦾"]];
 const H1 = ["trench", "jeet", "sol", "diamond", "paper", "moon", "rug", "ape", "chad", "degen", "bag", "exit", "floor", "alpha", "gm", "wagmi", "ngmi", "fomo", "send", "cope", "bonk", "dip"];
@@ -398,13 +400,17 @@ const EMOJIS = ["🐸", "🐶", "🐱", "🐹", "🦊", "🐧", "🐵", "🐳", 
 let S = null;
 let BOTS = [], DEVS = [];
 const UI = { view: "board", id: null, sort: "trend", q: "", side: "buy", ptab: "hold", lbSort: "pnl", prev: null };
-let lastFollowToast = -99;
+let lastFollowToast = -99, keyBuf = "";
 
 function derive() {
-  BOTS = Object.values(S.wallets).filter(w => !w.isPlayer && !w.ai);
+  BOTS = Object.values(S.wallets).filter(w => !w.isPlayer && !w.ai && w.celeb == null);
   DEVS = Object.values(S.wallets).filter(w => w.ai);
 }
 const W = () => S.wallets[S.active];
+const celebWallet = i => Object.values(S.wallets).find(w => w.celeb === i);
+function ensureCelebs() {
+  CELEBS.forEach((c, i) => { if (!celebWallet(i)) mkWallet({ name: c.name, emoji: c.e, hue: c.hue, celeb: i, style: "celeb", sol: c.sol, bio: `@${c.h} · Verified. Moves markets with one tweet.` }); });
+}
 const price = c => c.vSol / c.vTok;
 const mcSol = c => price(c) * SUPPLY;
 const nw = w => { let v = w.sol; for (const id in w.hold) { const c = S.coins[id]; if (c) v += w.hold[id].tok * price(c); } return v; };
@@ -424,7 +430,7 @@ function mkWallet(o) {
 const startSol = st => ({ whale: rnd(300, 900), sniper: rnd(30, 90), diamond: rnd(15, 60), jeet: rnd(5, 40), degen: rnd(3, 30) }[st]);
 
 function newGame() {
-  S = { v: 1, t: 0, seq: 1, solUsd: 184, wallets: {}, pw: [], active: null, coins: {}, order: [], tweets: [], feed: [], ffeed: [], follow: {}, ailog: [], rolls: [], nextRoll: 60, forceRoll: false, lastAir: -9999, lastShill: -99, lastTweet: -99, unread: 0, booting: true, hack: null, hackRes: null, hardened: {}, lastHack: -99 };
+  S = { v: 1, t: 0, seq: 1, solUsd: 184, wallets: {}, pw: [], active: null, coins: {}, order: [], tweets: [], feed: [], ffeed: [], follow: {}, ailog: [], rolls: [], nextRoll: 60, forceRoll: false, lastAir: -9999, lastShill: -99, lastTweet: -99, unread: 0, booting: true, hack: null, hackRes: null, hardened: {}, lastHack: -99, nextSec: 300, secLog: [] };
   AI_DEVS.forEach(([n, e]) => mkWallet({ name: n, emoji: e, ai: true, style: "dev", sol: rnd(40, 120), bio: "Autonomous launch agent. Generates, deploys and sometimes rugs memecoins with no human in the loop." }));
   const used = new Set();
   for (let i = 0; i < 44; i++) {
@@ -433,6 +439,7 @@ function newGame() {
     const st = wpick(STY);
     mkWallet({ name: n, emoji: pick(EMOJIS), style: st, sol: startSol(st), bio: pick(BIOS[st]) });
   }
+  ensureCelebs();
   const me = mkWallet({ name: "you.sol", emoji: "🐸", isPlayer: true, style: "human", sol: 10, bio: "New to the pit." });
   S.pw.push(me.id); S.active = me.id;
   derive();
@@ -663,6 +670,7 @@ function sim() {
     if (roll === 1) celebTweet();
   }
   if (S.hack && S.t >= S.hack.ends) hackEnd(false, "Time ran out");
+  if (S.t >= S.nextSec) { S.nextSec = S.t + 300; if (!S.booting) botHackRoll(); }
   if (S.t % 10 === 0) prune();
 }
 function prune() {
@@ -775,12 +783,41 @@ function hackEnd(ok, why) {
   if (UI.view === "hack") render(); else update();
 }
 
+/* ---------- wallet security ---------- */
+const secChance = w => Math.max(0, 0.10 - 0.01 * (w.sec || 0));
+const secCost = w => 25 * Math.pow(3, w.sec || 0);
+function botHackRoll() {
+  for (const id of S.pw) {
+    const w = S.wallets[id];
+    if (!(R() < secChance(w)) || w.sol < 0.01) continue;
+    const th = pick(BOTS), amt = w.sol * rnd(0.15, 0.35);
+    w.sol -= amt; th.sol += amt;
+    w.timesHacked = (w.timesHacked || 0) + 1; w.hackLost = (w.hackLost || 0) + amt;
+    S.secLog.unshift({ t: S.t, w: id, th: th.id, amt }); if (S.secLog.length > 20) S.secLog.length = 20;
+    postTweet(th.id, `just drained ${fSol(amt)} SOL from ${w.name}. upgrade your security lol`, null);
+    aiLog(`🚨 <b>${esc(th.name)}</b> hacked <b>${esc(w.name)}</b> for ${fSol(amt)} SOL`);
+    toast(`🚨 <b>${esc(th.name)}</b> hacked your wallet <b>${esc(w.name)}</b> and stole ${fSol(amt)} SOL.`, "down", { a: "nav", v: "wallets", label: "Secure it" });
+  }
+}
+function famousSignIn() {
+  const cs = CELEBS.map((c, i) => celebWallet(i)).filter(Boolean);
+  const fresh = cs.filter(w => !S.pw.includes(w.id));
+  fresh.forEach(w => { w.isPlayer = true; S.pw.push(w.id); if (S.hack && S.hack.target === w.id) S.hack = null; });
+  derive();
+  modal(`<h2>🔑 Famous wallets unlocked</h2>
+    <p class="muted">${fresh.length ? `You're signed into all ${cs.length} famous wallets. Switch to one here or from the wallet menu at the top.` : "You're already signed into every famous wallet."}</p>
+    <ul class="celebs">${cs.map(w => `<li>${av(w, "l")}<div style="min-width:0;flex:1"><b>${esc(w.name)}</b> <span class="ver gold" aria-label="verified">✓</span><div class="muted mono">◎ ${Math.round(w.sol).toLocaleString()} SOL</div></div>${w.id === S.active ? '<span class="pill you">Active</span>' : `<button class="btn sm brand" data-a="use" data-v="${w.id}">Use</button>`}</li>`).join("")}</ul>
+    <div class="mrow"><button class="btn ghost" data-a="close">Close</button></div>`);
+  if (fresh.length) toast(`🔑 Signed into ${fresh.length} famous wallets.`, "gold");
+  render();
+}
+
 /* ---------- rendering helpers ---------- */
 const av = (w, sz = "") => `<span class="av ${sz}" style="--h:${w.hue}" aria-hidden="true">${w.emoji}</span>`;
 const cimg = (c, sz = "") => `<span class="cimg ${sz}" style="--h:${c.hue}" aria-hidden="true">${c.emoji}</span>`;
 const wlink = w => w ? `<button class="lnk" data-a="prof" data-v="${w.id}">${av(w)}<span>${esc(w.name)}</span></button>` : `<span class="muted">gone</span>`;
 const tkLink = c => `<button class="tk" data-a="coin" data-v="${c.id}">$${esc(c.ticker)}</button>`;
-const role = w => w.isPlayer ? '<span class="pill you">You</span>' : w.ai ? '<span class="pill ai">AI dev</span>' : `<span class="pill">${w.style}</span>`;
+const role = w => { const f = w.celeb != null ? '<span class="pill gold">Famous</span>' : ""; return w.isPlayer ? '<span class="pill you">You</span>' + (f ? " " + f : "") : w.ai ? '<span class="pill ai">AI dev</span>' : f || `<span class="pill">${w.style}</span>`; };
 function linkify(text) {
   const map = {}; for (const id of S.order) map[S.coins[id].ticker] = S.coins[id];
   return esc(text).replace(/\$([A-Za-z0-9]{2,14})/g, (m, t) => map[t.toUpperCase()] ? tkLink(map[t.toUpperCase()]) : m);
@@ -1031,7 +1068,7 @@ function vTwitter() {
     <aside class="twside">
       <div class="panel" id="roll"></div>
       <div class="panel"><h3>Accounts that move markets</h3>
-        <ul class="celebs">${CELEBS.map(c => `<li><span class="av l" style="--h:${c.hue}" aria-hidden="true">${c.e}</span><div><b>${esc(c.name)}</b> <span class="ver gold" aria-label="verified">✓</span><div class="muted">@${c.h}</div></div></li>`).join("")}</ul>
+        <ul class="celebs" id="celebs"></ul>
         <p class="fine" style="margin-top:12px">Parody accounts. Any live coin can get picked, including yours.</p>
       </div>
     </aside>
@@ -1054,6 +1091,7 @@ function tweetHtml(tw) {
 }
 function upTwitter() {
   S.unread = 0;
+  setH("celebs", CELEBS.map((c, i) => { const w = celebWallet(i); return `<li><span class="av l" style="--h:${c.hue}" aria-hidden="true">${c.e}</span><div style="min-width:0;flex:1"><b>${esc(c.name)}</b> <span class="ver gold" aria-label="verified">✓</span><div class="muted">@${c.h}</div></div>${w ? `<button class="lnk mono" data-a="prof" data-v="${w.id}" title="Open wallet">◎ ${Math.round(w.sol).toLocaleString()} SOL</button>` : ""}</li>`; }).join(""));
   setH("twfeed", S.tweets.slice(0, 40).map(tweetHtml).join("") || '<p class="empty">Quiet timeline.</p>');
   const left = Math.max(0, S.nextRoll - S.t);
   setH("roll", `<h3>Big-name tweet roll</h3>
@@ -1165,6 +1203,7 @@ function vWallets() {
   <div class="wgrid">${S.pw.map(id => { const w = S.wallets[id]; return `<div class="panel wcard${id === S.active ? " act" : ""}">
     <div class="wtop">${av(w, "l")}<div><b>${esc(w.name)}</b><div class="mono faint">${short(w.addr)}</div></div>${id === S.active ? '<span class="pill you">Active</span>' : ""}</div>
     <div class="wstats" id="ws-${id}"></div>
+    <div class="secrow"><div><b>Security level ${w.sec || 0}</b><div class="fine">${(secChance(w) * 100).toFixed(0)}% chance a bot hacks this wallet every 5 min</div></div>${(w.sec || 0) >= 10 ? '<span class="pill up">Maxed</span>' : `<button class="btn sm" data-a="secup" data-v="${id}">Upgrade · ${secCost(w).toLocaleString()} SOL</button>`}</div>
     <div class="wbtns">${id !== S.active ? `<button class="btn sm brand" data-a="use" data-v="${id}">Use this wallet</button>` : ""}<button class="btn sm ghost" data-a="prof" data-v="${id}">Profile</button><button class="btn sm ghost" data-a="edit" data-v="${id}">Edit</button></div>
   </div>`; }).join("")}</div>
   <div class="wforms">
@@ -1174,6 +1213,7 @@ function vWallets() {
       <label class="lbl" for="txto">To</label><select id="txto">${opts(other)}</select>
       <label class="lbl" for="txamt">Amount (SOL)</label><input id="txamt" type="number" min="0" step="0.1" placeholder="1">
       <button class="btn" type="submit">Send</button></form>
+    <div class="panel"><h3>Bot hackers</h3><p class="fine">Every 5 minutes each of your wallets rolls against its hack chance. A hit steals 15–35% of that wallet's SOL. Each security upgrade cuts the chance by 1 point and costs 3× the last one.</p><p id="seccd"></p><ol class="ffeed" id="seclog"></ol></div>
     <div class="panel"><h3>Faucet</h3><p class="fine">Broke? The faucet drips 2 SOL into your active wallet every 3 minutes. It counts as a deposit, so it can't pad your profit.</p><button class="btn" data-a="air">Claim 2 SOL</button><p class="fine" id="aircd"></p></div>
     <div class="panel"><h3>Start over</h3><p class="fine">Wipes every wallet, coin and tweet saved in this browser.</p><button class="btn ghost danger" data-a="reset">Reset game</button></div>
   </div>`;
@@ -1185,6 +1225,8 @@ function upWallets() {
   }
   const cd = 180 - (S.t - S.lastAir);
   setH("aircd", cd > 0 ? `Next drip in ${mmss(cd)}` : "Ready to claim.");
+  setH("seccd", `Next hack check in <b class="mono">${mmss(Math.max(0, S.nextSec - S.t))}</b>`);
+  setH("seclog", S.secLog.slice(0, 8).map(x => { const w = S.wallets[x.w], th = S.wallets[x.th]; return `<li><span class="t">${ago(x.t)}</span>${wlink(th)} stole <b class="down">${fSol(x.amt)} SOL</b> from ${esc(w?.name || "")}</li>`; }).join("") || '<li class="faint">No breaches yet.</li>');
 }
 
 /* profile */
@@ -1217,7 +1259,7 @@ function upProfile() {
     ["Net worth", `${fSol(m.nw)} SOL`], ["Profit", `<span class="${m.pnl >= 0 ? "up" : "down"}">${m.pnl >= 0 ? "+" : ""}${fSol(m.pnl)} SOL</span>`],
     ["ROI", `<span class="${m.roi >= 0 ? "up" : "down"}">${fPct(m.roi)}</span>`], ["Win rate", w.wins + w.losses ? (winr * 100).toFixed(0) + "%" : "–"],
     ["Trades", w.n], ["Volume", fSol(w.vol) + " SOL"], ["Coins launched", w.made.length], ["Rugs", w.rugs],
-    ...(w.isPlayer ? [["Hacks cracked", `${w.hkOk || 0} of ${(w.hkOk || 0) + (w.hkFail || 0)}`], ["Hack haul", `${fSol(w.hkLoot || 0)} SOL`]] : [["Times hacked", w.hacked || 0]])
+    ...(w.isPlayer ? [["Security level", `${w.sec || 0} · ${(secChance(w) * 100).toFixed(0)}% risk`], ["Hacked by bots", `${w.timesHacked || 0}× · ${fSol(w.hackLost || 0)} SOL`], ["Hacks cracked", `${w.hkOk || 0} of ${(w.hkOk || 0) + (w.hkFail || 0)}`], ["Hack haul", `${fSol(w.hkLoot || 0)} SOL`]] : [["Times hacked", w.hacked || 0]])
   ].map(([k, v]) => `<div class="st"><span>${k}</span><b>${v}</b></div>`).join("")}</div>
   <div class="seg" style="align-self:flex-start">${tabs.map(([k, l]) => `<button class="${UI.ptab === k ? "on" : ""}" data-a="ptab" data-v="${k}">${l}</button>`).join("")}</div>
   <div class="panel flush"><div class="tblwrap">${body}</div></div>`);
@@ -1307,6 +1349,15 @@ const ACT = {
   },
   lbsort: v => { UI.lbSort = v; render(); },
   hack: v => hackStart(v),
+  secup: v => {
+    const w = S.wallets[v], lvl = w.sec || 0;
+    if (lvl >= 10) return toast("Security is maxed. Bots can't hack this wallet.");
+    const c = secCost(w);
+    if (w.sol < c) return toast(`Upgrade ${lvl + 1} costs ${c.toLocaleString()} SOL and ${esc(w.name)} has ${fSol(w.sol)} SOL.`, "down");
+    w.sol -= c; w.sec = lvl + 1;
+    toast(`🛡️ ${esc(w.name)} is now security level ${w.sec}. Bot hack chance: ${(secChance(w) * 100).toFixed(0)}% every 5 min.`, "up");
+    render();
+  },
   hkguess: () => hackGuess(),
   hkkey: v => { const el = $("#hkin"); if (!el || !S.hack) return; el.value = v === "del" ? el.value.slice(0, -1) : (el.value + v).slice(0, S.hack.tier.len); },
   hkquit: () => hackEnd(false, "You aborted"),
@@ -1317,7 +1368,7 @@ const ACT = {
     else { S.follow[v] = { copy: 0, alert: true }; toast(`Following <b>${esc(w.name)}</b>. Their trades show up in Following.`, "up"); }
     if (UI.view === "following") render(); else update();
   },
-  use: v => { S.active = v; toast(`Now trading as <b>${esc(S.wallets[v].name)}</b>.`); render(); },
+  use: v => { closeModal(); S.active = v; toast(`Now trading as <b>${esc(S.wallets[v].name)}</b>.`); render(); },
   edit: v => editModal(v),
   saveprof: v => {
     const w = S.wallets[v], n = $("#pename").value.trim();
@@ -1344,6 +1395,8 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !$("#modal").hidden) closeModal();
+  if ((e.ctrlKey || e.metaKey) && (e.key === "9" || e.code === "Digit9")) { e.preventDefault(); famousSignIn(); return; }
+  if (e.key.length === 1 && !e.target.matches("input,textarea,select")) { keyBuf = (keyBuf + e.key.toLowerCase()).slice(-4); if (keyBuf === "fame") { keyBuf = ""; famousSignIn(); } }
   if ((e.key === "Enter" || e.key === " ") && e.target.matches("article[data-a], div[data-a][tabindex]")) { e.preventDefault(); e.target.click(); }
   if (e.key === "Enter" && e.target.id === "amt") ACT.exec();
   if (e.key === "Enter" && e.target.id === "hkin") hackGuess();
@@ -1398,6 +1451,8 @@ function start(data) {
   S = (data && data.state && data.state.v === 1) ? data.state : (load() || newGame());
   S.booting = false;
   S.hardened = S.hardened || {}; if (S.lastHack == null) S.lastHack = -99;
+  if (S.nextSec == null) S.nextSec = S.t + 300; S.secLog = S.secLog || [];
+  ensureCelebs();
   derive();
   if (data && data.ui) Object.assign(UI, data.ui);
   render();
